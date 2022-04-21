@@ -3,7 +3,7 @@ import { ApolloProvider, Query } from 'react-apollo';
 import client from './client';
 import { SEARCH_REPOSITORIES } from './graphql';
 
-const VARIABLES = {
+const DEFAULT_STATE = {
   after: null,
   before: null,
   first: 5,
@@ -12,10 +12,20 @@ const VARIABLES = {
 };
 
 const App = () => {
-  const [variables] = useState(VARIABLES); // eslint-disable-next-line
+  const [variables, setVariavles] = useState(DEFAULT_STATE); // eslint-disable-next-line
+
+  const handleChange = (e) => {
+    setVariavles({
+      ...DEFAULT_STATE,
+      query: e.target.value,
+    });
+  };
 
   return (
     <ApolloProvider client={client}>
+      <form>
+        <input type='text' value={variables.query} onChange={handleChange} />
+      </form>
       <Query query={SEARCH_REPOSITORIES} variables={{ ...variables }}>
         {({ loading, error, data }) => {
           if (loading) return 'loading...';
