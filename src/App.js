@@ -30,8 +30,13 @@ const App = () => {
         {({ loading, error, data }) => {
           if (loading) return 'loading...';
           if (error) return `Error ${error.message}`;
-          console.log({ data });
-          return <div></div>;
+
+          const search = data.search;
+          const repositoryCount = search.repositoryCount;
+          const repositoryUnit =
+            repositoryCount === 1 ? 'Repository' : 'Repositories';
+          const title = `Githubリポジトリ検索結果: ${data.search.repositoryCount} ${repositoryUnit}`;
+          return <h2>{title}</h2>;
         }}
       </Query>
     </ApolloProvider>
