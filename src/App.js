@@ -21,6 +21,13 @@ const App = () => {
     });
   };
 
+  const getResultTitle = (data) => {
+    const repositoryCount = data.search.repositoryCount;
+    const repositoryUnit = repositoryCount === 1 ? 'Repository' : 'Repositories';
+
+    return `Githubリポジトリ検索結果: ${repositoryCount} ${repositoryUnit}`;
+  };
+
   return (
     <ApolloProvider client={client}>
       <form>
@@ -31,12 +38,23 @@ const App = () => {
           if (loading) return 'loading...';
           if (error) return `Error ${error.message}`;
 
-          const search = data.search;
-          const repositoryCount = search.repositoryCount;
-          const repositoryUnit =
-            repositoryCount === 1 ? 'Repository' : 'Repositories';
-          const title = `Githubリポジトリ検索結果: ${data.search.repositoryCount} ${repositoryUnit}`;
-          return <h2>{title}</h2>;
+          return (
+            <>
+              <h2>{getResultTitle(data)}</h2>
+              <ul>
+                {data.search.edges.map((edge) => {
+                  const node = edge.node;
+                  return (
+                    <li key={node.id}>
+                      <a href={node.url} target='_blank' rel='noreferrer'>
+                        {node.name}
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </>
+          );
         }}
       </Query>
     </ApolloProvider>
