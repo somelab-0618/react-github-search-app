@@ -3,19 +3,20 @@ import { ApolloProvider, Query } from 'react-apollo';
 import client from './client';
 import { SEARCH_REPOSITORIES } from './graphql';
 
+const PER_PAGE = 5;
 const DEFAULT_STATE = {
   after: null,
   before: null,
-  first: 5,
+  first: PER_PAGE,
   last: null,
   query: 'フロントエンドエンジニア',
 };
 
 const App = () => {
-  const [variables, setVariavles] = useState(DEFAULT_STATE); // eslint-disable-next-line
+  const [variables, setVariables] = useState(DEFAULT_STATE); // eslint-disable-next-line
 
   const handleChange = (e) => {
-    setVariavles({
+    setVariables({
       ...DEFAULT_STATE,
       query: e.target.value,
     });
@@ -28,6 +29,16 @@ const App = () => {
     return `Githubリポジトリ検索結果: ${repositoryCount} ${repositoryUnit}`;
   };
 
+  const goNext = (search) => {
+    setVariables({
+      ...variables,
+      first: PER_PAGE,
+      after: search.pageInfo.endCursor,
+      last: null,
+      before: null,
+    });
+  };
+
   return (
     <ApolloProvider client={client}>
       <form>
@@ -37,12 +48,13 @@ const App = () => {
         {({ loading, error, data }) => {
           if (loading) return 'loading...';
           if (error) return `Error ${error.message}`;
+          const search = data.search;
 
           return (
             <>
               <h2>{getResultTitle(data)}</h2>
               <ul>
-                {data.search.edges.map((edge) => {
+                {search.edges.map((edge) => {
                   const node = edge.node;
                   return (
                     <li key={node.id}>
@@ -53,6 +65,9 @@ const App = () => {
                   );
                 })}
               </ul>
+              {search.pageInfo.hasNextPage && (
+                <button onClick={() => goNext(search)}>NEXT</button>
+              )}
             </>
           );
         }}
