@@ -4,8 +4,15 @@ import client from './client';
 import { SEARCH_REPOSITORIES } from './graphql';
 
 const StarButton = (props) => {
-  const totalCount = props.node.stargazers.totalCount;
-  return <button>{totalCount === 1 ? '1 STAR' : `${totalCount} STARS`}</button>;
+  const node = props.node;
+  const totalCount = node.stargazers.totalCount;
+  const viewerHasStarred = node.viewerHasStarred;
+  const starCount = totalCount === 1 ? '1 STAR' : `${totalCount} STARS`;
+  return (
+    <button>
+      {starCount} | {viewerHasStarred ? '★' : '☆'}
+    </button>
+  );
 };
 
 const PER_PAGE = 5;
@@ -75,7 +82,7 @@ const App = () => {
                       <a href={node.url} target='_blank' rel='noreferrer'>
                         {node.name}
                       </a>
-                      &nbsp;
+                      &nbsp; &nbsp;
                       <StarButton node={node} />
                     </li>
                   );
