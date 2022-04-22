@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { ApolloProvider, Query, Mutation } from 'react-apollo';
 import client from './client';
 import { ADD_STAR, REMOVE_STAR, SEARCH_REPOSITORIES } from './graphql';
@@ -56,16 +56,19 @@ const DEFAULT_STATE = {
   before: null,
   first: PER_PAGE,
   last: null,
-  query: 'フロントエンドエンジニア',
+  query: '',
 };
 
 const App = () => {
   const [variables, setVariables] = useState(DEFAULT_STATE); // eslint-disable-next-line
+  const el = useRef(null);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(el.current.value);
 
-  const handleChange = (e) => {
     setVariables({
       ...DEFAULT_STATE,
-      query: e.target.value,
+      query: el.current.value,
     });
   };
 
@@ -97,8 +100,9 @@ const App = () => {
 
   return (
     <ApolloProvider client={client}>
-      <form>
-        <input type='text' value={variables.query} onChange={handleChange} />
+      <form onSubmit={handleSubmit}>
+        <input type='text' ref={el} />
+        <input type='submit' value='検索' />
       </form>
       <Query query={SEARCH_REPOSITORIES} variables={variables}>
         {({ loading, error, data }) => {
