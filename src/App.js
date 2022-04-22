@@ -38,6 +38,15 @@ const App = () => {
       before: null,
     });
   };
+  const goPrev = (search) => {
+    setVariables({
+      ...variables,
+      first: null,
+      after: null,
+      last: PER_PAGE,
+      before: search.pageInfo.startCursor,
+    });
+  };
 
   return (
     <ApolloProvider client={client}>
@@ -65,6 +74,9 @@ const App = () => {
                   );
                 })}
               </ul>
+              {search.pageInfo.hasPreviousPage && (
+                <button onClick={() => goPrev(search)}>Prev</button>
+              )}
               {search.pageInfo.hasNextPage && (
                 <button onClick={() => goNext(search)}>NEXT</button>
               )}
